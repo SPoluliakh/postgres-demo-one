@@ -9,4 +9,13 @@ export class ChangeUser {
 
   @IsNotEmpty()
   readonly role: string;
+
+  @IsNotEmpty()
+  readonly firstname: string;
+
+  @IsNotEmpty()
+  readonly lastname: string;
+
+  @IsNotEmpty()
+  readonly state: string;
 }

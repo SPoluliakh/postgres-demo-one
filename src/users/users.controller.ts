@@ -9,6 +9,7 @@ import {
   Header,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ChangeUser } from './dto/change-user.dto';
 import { CreateUser } from './dto/create-user.dto';
@@ -17,8 +18,13 @@ import { UsersService } from './users.service';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UsersService) {}
+
   @Get()
-  getAllUsers() {
+  getAllUsers(@Query('role') role?: string) {
+    if (role) {
+      return this.userService.findByRole(role);
+    }
+
     return this.userService.findAll();
   }
 

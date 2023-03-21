@@ -9,7 +9,7 @@ export class CreateUser {
 
   @IsNotEmpty()
   readonly role: string;
-  //
+
   @IsNotEmpty()
   readonly firstname: string;
 

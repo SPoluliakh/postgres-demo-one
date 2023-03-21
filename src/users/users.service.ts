@@ -10,7 +10,9 @@ export class UsersService {
   constructor(@InjectModel(User) private userModel: typeof User) {}
 
   async findAll(): Promise<User[]> {
-    return this.userModel.findAll();
+    return this.userModel.findAll({
+      include: [Profile],
+    });
   }
 
   async findOne(id: string): Promise<User> {
@@ -18,6 +20,18 @@ export class UsersService {
       where: { id },
       include: [Profile],
     });
+  }
+
+  async findByRole(role: string): Promise<User[]> {
+    const users = await this.userModel.findAll({
+      where: { role },
+      include: [Profile],
+    });
+
+    if (!users || !users.length) {
+      throw new Error(`No users found with role ${role}`);
+    }
+    return users;
   }
 
   async createUser(newUser: CreateUser): Promise<User> {
@@ -41,14 +55,23 @@ export class UsersService {
     id: string,
     newData: ChangeUser,
   ): Promise<[affectedCount: number, affectedRows: User[]]> {
-    return this.userModel.update(
-      { ...newData },
-      {
-        where: { id },
+    const user = await this.userModel.findByPk(id, { include: [Profile] });
 
-        returning: true,
-      },
-    );
+    await user.update({
+      username: newData.username,
+      email: newData.email,
+      role: newData.role,
+    });
+
+    if (user.profileld) {
+      await user.profileld.update({
+        firstname: newData.firstname,
+        lastname: newData.lastname,
+        state: newData.state,
+      });
+    }
+
+    return [1, [user]];
   }
 
   async removeUser(id: string): Promise<void> {
