@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { ChangeUser } from './dto/change-user.dto';
 import { CreateUser } from './dto/create-user.dto';
 import { User } from './models/user.model';
+import { Profile } from 'src/profiles/models/profile.model';
 
 @Injectable()
 export class UsersService {
@@ -13,7 +14,10 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    return this.userModel.findOne({ where: { id } });
+    return this.userModel.findOne({
+      where: { id },
+      include: [Profile],
+    });
   }
 
   async createUser(newUser: CreateUser): Promise<User> {
@@ -21,8 +25,16 @@ export class UsersService {
     user.username = newUser.username;
     user.email = newUser.email;
     user.role = newUser.role;
+    await user.save();
 
-    return user.save();
+    const profile = new Profile();
+    profile.firstname = newUser.firstname;
+    profile.lastname = newUser.lastname;
+    profile.state = newUser.state;
+    profile.userId = user.id;
+    await profile.save();
+
+    return user;
   }
 
   async updateUser(
@@ -33,6 +45,7 @@ export class UsersService {
       { ...newData },
       {
         where: { id },
+
         returning: true,
       },
     );

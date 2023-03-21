@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SequelizeOptionsFactory } from '@nestjs/sequelize';
 import { SequelizeModuleOptions } from '@nestjs/sequelize/dist';
+import { Profile } from 'src/profiles/models/profile.model';
 import { User } from 'src/users/models/user.model';
 import { EnumConfig } from './enumConfig/enumCinfig';
 
@@ -22,10 +23,7 @@ export class SequelizeConfigService implements SequelizeOptionsFactory {
       username,
       password,
       database,
-      models: [
-        User,
-        // Profile
-      ],
+      models: [User, Profile],
       autoLoadModels: true,
       synchronize: true,
     };

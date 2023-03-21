@@ -1,4 +1,5 @@
-import { Table, Model, Column } from 'sequelize-typescript';
+import { Table, Model, Column, HasOne } from 'sequelize-typescript';
+import { Profile } from 'src/profiles/models/profile.model';
 
 @Table
 export class User extends Model {
@@ -10,4 +11,7 @@ export class User extends Model {
 
   @Column
   role: string;
+
+  @HasOne(() => Profile)
+  profileld: Profile;
 }
